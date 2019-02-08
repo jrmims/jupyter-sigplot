@@ -71,6 +71,8 @@ class SigPlot(widgets.DOMWidget):
         # Github issue #17. I expect that we'll be able to just set
         # self.data_dir to the notebook server's cwd/root and be good to go.
         self.data_dir = kwargs.pop('data_dir', '')
+        self.image_dir = os.path.join(os.getcwd(), "images")
+        _require_dir(self.image_dir)
 
         if 'path_resolvers' in kwargs:
             # Don't use pop()+default because we don't want to override class-
@@ -122,7 +124,7 @@ class SigPlot(widgets.DOMWidget):
     def autosave_plot(self,change):
         filename = change.new["filename"]
         data = change.new["data"].split("base64,")[1]
-        _save_plot_png(filename,data)
+        _save_plot_png(os.path.join(self.image_dir,filename), data)
         
 
     @register_line_cell_magic

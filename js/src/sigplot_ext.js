@@ -114,7 +114,11 @@ var SigPlotView = widgets.DOMWidgetView.extend({
         var modelLocal=this.model;
         window.setTimeout(function() {
           var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
-          modelLocal.set("savedPlot", {"filename": "testName.png", "data": img});
+          var currentCell = Jupyter.notebook.get_selected_cell();
+          var cellNumber = currentCell.input_prompt_number;
+          var notebookName = currentCell.notebook.notebook_name;
+          var filename = notebookName + "_" + cellNumber + ".png";
+          modelLocal.set("savedPlot", {"filename": filename, "data": img});
           modelLocal.save_changes();
           // (JRM 2018-02-08): Is the code below attempting to save
           // the plot as a png? If so, we can remove it with these new
