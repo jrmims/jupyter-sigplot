@@ -7,6 +7,7 @@ from __future__ import (
 import errno
 import os
 import sys
+from binascii import a2b_base64
 
 import numpy as np
 
@@ -16,6 +17,7 @@ from traitlets import (
     Bool,
     Dict,
     List,
+    observe,
 )
 
 import requests
@@ -44,6 +46,7 @@ class SigPlot(widgets.DOMWidget):
     array_obj = Dict().tag(sync=True)
     done = Bool(False).tag(sync=True)
     options = Dict().tag(sync=True)
+    savedPlot = Dict().tag(sync=True)
     inputs = []
     arrays = []
     hrefs = []
@@ -54,6 +57,7 @@ class SigPlot(widgets.DOMWidget):
     # Sequence of callables used by _prepare_file_input to resolve relative
     # pathnames
     path_resolvers = []
+    
 
     def __init__(self, *args, **kwargs):
         self.inputs = []
@@ -113,6 +117,13 @@ class SigPlot(widgets.DOMWidget):
         if self.array_obj not in self.arrays:
             self.arrays.append(self.array_obj)
             self.oldArrays = self.arrays
+            
+    @observe("savedPlot")
+    def autosave_plot(self,change):
+        filename = change.new["filename"]
+        data = change.new["data"].split("base64,")[1]
+        _save_plot_png(filename,data)
+        
 
     @register_line_cell_magic
     def overlay_array(self, data):
@@ -448,3 +459,9 @@ def _prepare_href_input(orig_inputs, local_dir, resolvers=None):
         prepared.append(pi)
 
     return prepared
+
+def _save_plot_png(filename, base64ascii):
+    binData = a2b_base64(base64ascii)
+    with open(filename, "wb") as fd:
+        fd.write(binData)
+        fd.close()

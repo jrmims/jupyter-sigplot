@@ -111,8 +111,14 @@ var SigPlotView = widgets.DOMWidgetView.extend({
     _done: function() {
       if (this.model.get('done')) {
         var plotLocal=this.plot;
+        var modelLocal=this.model;
         window.setTimeout(function() {
           var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
+          modelLocal.set("savedPlot", {"filename": "testName.png", "data": img});
+          modelLocal.save_changes();
+          // (JRM 2018-02-08): Is the code below attempting to save
+          // the plot as a png? If so, we can remove it with these new
+          // changes.
           var link = document.createElement("a");
           link.href = img;
           link.display = img;
