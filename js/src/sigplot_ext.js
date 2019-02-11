@@ -115,7 +115,7 @@ var SigPlotView = widgets.DOMWidgetView.extend({
         window.setTimeout(function() {
           var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
           var currentCell = Jupyter.notebook.get_selected_cell();
-          var cellNumber = currentCell.input_prompt_number;
+          var cellNumber = currentCell.cell_id;
           var notebookName = currentCell.notebook.notebook_name;
           var filename = notebookName + "_" + cellNumber + ".png";
           modelLocal.set("savedPlot", {"filename": filename, "data": img});
