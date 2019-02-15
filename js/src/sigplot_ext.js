@@ -111,15 +111,11 @@ var SigPlotView = widgets.DOMWidgetView.extend({
     _done: function() {
       if (this.model.get('done')) {
         var plotLocal=this.plot;
+        var modelLocal=this.model;
         window.setTimeout(function() {
           var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
-          var link = document.createElement("a");
-          link.href = img;
-          link.display = img;
-          document.body.appendChild(link);
-          document.body.appendChild(link);
-          //document.write('<img src="' + img +'"/>');
-          document.body.removeChild(link);
+          modelLocal.set("pngBytes", img);
+          modelLocal.save_changes();
         }, 2000);
       }
     }

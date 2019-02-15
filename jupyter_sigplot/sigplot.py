@@ -16,6 +16,7 @@ from traitlets import (
     Bool,
     Dict,
     List,
+    observe,
 )
 
 import requests
@@ -23,6 +24,7 @@ import requests
 from IPython.display import (
     display,
     clear_output,
+    Image,
 )
 
 
@@ -43,6 +45,7 @@ class SigPlot(widgets.DOMWidget):
     array_obj = Dict().tag(sync=True)
     done = Bool(False).tag(sync=True)
     options = Dict().tag(sync=True)
+    pngBytes = Unicode().tag(sync=True)
     inputs = []
     arrays = []
     hrefs = []
@@ -58,6 +61,7 @@ class SigPlot(widgets.DOMWidget):
         self.inputs = []
         self.hrefs = []
         self.arrays = []
+        self.imageBytes = ""
         # Where to look for data, and where to cache/symlink remote resources
         # that the server or client cannot access directly. Note that changing
         # the kernel's current directory affects data_dir if it is set as a
@@ -109,6 +113,14 @@ class SigPlot(widgets.DOMWidget):
         if self.array_obj not in self.arrays:
             self.arrays.append(self.array_obj)
             self.oldArrays = self.arrays
+            
+    @observe("pngBytes")
+    def storePlotBytes(self,change):
+        imageBytes = change.new.split("base64,")[1]
+        self.imageBytes = imageBytes
+        
+    def inlinePlot(self):
+        return Image(self.imageBytes)
 
     def overlay_array(self, data):
         if not isinstance(data, (list, tuple, np.ndarray)):
