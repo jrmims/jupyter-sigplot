@@ -63,6 +63,7 @@ class SigPlot(widgets.DOMWidget):
         self.inputs = []
         self.hrefs = []
         self.arrays = []
+        self.data = [] # stores data
         # Where to look for data, and where to cache/symlink remote resources
         # that the server or client cannot access directly.
         #
@@ -125,6 +126,7 @@ class SigPlot(widgets.DOMWidget):
         filename = change.new["filename"]
         data = change.new["data"].split("base64,")[1]
         _save_plot_png(os.path.join(self.image_dir,filename), data)
+        self.data = data
         
 
     @register_line_cell_magic
