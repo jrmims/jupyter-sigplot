@@ -55,6 +55,8 @@ var SigPlotView = widgets.DOMWidgetView.extend({
     handle_command_args_change: function() {
         var old_command_and_arguments = this.model.previous('command_and_arguments');
         var new_command_and_arguments = this.model.get('command_and_arguments');
+        var plotLocal = this.plot;
+        var modelLocal = this.model;
 
         // Check that the arrays are different
         if (old_command_and_arguments === new_command_and_arguments) {
@@ -69,6 +71,17 @@ var SigPlotView = widgets.DOMWidgetView.extend({
 
             // call ``command`` providing ``arguments``
             this.plot[command].apply(this.plot, args);
+
+            window.setTimeout(function() {
+                var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
+                modelLocal.set("imgStrTraitlet", img);
+                modelLocal.save_changes();
+/*
+this.model.set followed by this.model.save_changes(); changes the model.
+Use the view method touch instead of model.save_changes to associate the changes with the current view, 
+thus associating any response messages with the view’s cell.
+*/
+            }, 2000);
         }
     },
 

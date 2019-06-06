@@ -9,6 +9,7 @@ import errno
 import os
 import sys
 
+from base64 import b64decode
 import ipywidgets as widgets
 import numpy as np
 import requests
@@ -17,11 +18,12 @@ from traitlets import (
     Bool,
     Dict,
     Float,
+    observe,
 )
 
 from ._version import __version__ as version_string
 
-from IPython.display import display
+from IPython.display import display, Image
 
 _py3k = sys.version_info[0] == 3
 if _py3k:
@@ -49,6 +51,9 @@ class Plot(widgets.DOMWidget):
     progress = Float().tag(sync=True)
     done = Bool(False).tag(sync=True)
 
+    """PNG String Representation of Plot"""
+    imgStrTraitlet = Unicode().tag(sync=True)
+ 
     """Sequence of callables used by ``_prepare_file_input``
     to resolve relative pathnames"""
     path_resolvers = []
@@ -61,6 +66,9 @@ class Plot(widgets.DOMWidget):
         # the kernel's current directory affects data_dir if it is set as a
         # relative path.
         self.data_dir = kwargs.pop('data_dir', '')
+
+        #Stores the Base64 representation of the plot
+        self.imageB64Str = ""
 
         if 'path_resolvers' in kwargs:
             # Don't use pop()+default because we don't want to override class-
@@ -187,6 +195,16 @@ class Plot(widgets.DOMWidget):
         :return:
         """
         self.command_and_arguments = command_and_arguments
+
+    @observe("imgStrTraitlet")
+    def storePlotImage(self, change):
+        # strip out 'data:image/png;base64,'
+        imageB64Str = change.new.split("base64,")[1]
+        self.imageB64Str = imageB64Str
+
+    def inlinePlot(self):
+        # Plot image to notebook
+        return Image(b64decode(self.imageB64Str))
 
 
 # End of class SigPlot
