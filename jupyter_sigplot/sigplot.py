@@ -23,7 +23,7 @@ from traitlets import (
 
 from ._version import __version__ as version_string
 
-from IPython.display import display, Image
+from IPython.display import display, Image, HTML
 
 _py3k = sys.version_info[0] == 3
 if _py3k:
@@ -82,7 +82,7 @@ class Plot(widgets.DOMWidget):
         # Whatever's left is meant for sigplot.js's ``sigplot.Plot``
         self.plot_options = kwargs
 
-        display(self)
+        self.displayHandle = display(self, display_id=True)
 
     def __getattr__(self, attr):
         """Enables a "thin-wrapper" around sigplot.Plot (JS)

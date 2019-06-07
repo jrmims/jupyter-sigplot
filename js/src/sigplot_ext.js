@@ -76,11 +76,6 @@ var SigPlotView = widgets.DOMWidgetView.extend({
                 var img = plotLocal._Mx.active_canvas.toDataURL("image/png");
                 modelLocal.set("imgStrTraitlet", img);
                 modelLocal.save_changes();
-/*
-this.model.set followed by this.model.save_changes(); changes the model.
-Use the view method touch instead of model.save_changes to associate the changes with the current view, 
-thus associating any response messages with the view’s cell.
-*/
             }, 2000);
         }
     },
